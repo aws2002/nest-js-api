@@ -4,7 +4,7 @@ import {
     IsString,
   } from 'class-validator';
   
-  export class CreateBookmarkDto {
+  export class CreateTodoDto {
     @IsString()
     @IsNotEmpty()
     title: string;
@@ -13,7 +13,4 @@ import {
     @IsOptional()
     description?: string;
   
-    @IsString()
-    @IsNotEmpty()
-    link: string;
   }

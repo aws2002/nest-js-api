@@ -7,9 +7,9 @@ import * as pactum from 'pactum';
 import { AppModule } from '../src/app.module';
 import { AuthDto } from '../src/auth/dto';
 import {
-  CreateBookmarkDto,
-  EditBookmarkDto,
-} from '../src/bookmark/dto';
+  CreateTodoDto,
+  EditTodoDto,
+} from '../src/todo/dto';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { EditUserDto } from '../src/user/dto';
 
@@ -30,12 +30,12 @@ describe('App e2e', () => {
       }),
     );
     await app.init();
-    await app.listen(3000);
+    await app.listen(3333);
 
     prisma = app.get(PrismaService);
     await prisma.cleanDb();
     pactum.request.setBaseUrl(
-      'http://localhost:3000',
+      'http://localhost:3333',
     );
   });
 
@@ -49,7 +49,7 @@ describe('App e2e', () => {
       password: '123',
     };
     describe('Signup', () => {
-      it('should throw if email empty', () => {
+      it('should throw error if email empty', () => {
         return pactum
           .spec()
           .post('/auth/signup')
@@ -58,7 +58,7 @@ describe('App e2e', () => {
           })
           .expectStatus(400);
       });
-      it('should throw if password empty', () => {
+      it('should throw error if password empty', () => {
         return pactum
           .spec()
           .post('/auth/signup')
@@ -67,7 +67,7 @@ describe('App e2e', () => {
           })
           .expectStatus(400);
       });
-      it('should throw if no body provided', () => {
+      it('should throw error if no body provided', () => {
         return pactum
           .spec()
           .post('/auth/signup')
@@ -83,7 +83,7 @@ describe('App e2e', () => {
     });
 
     describe('Signin', () => {
-      it('should throw if email empty', () => {
+      it('should throw error if email empty', () => {
         return pactum
           .spec()
           .post('/auth/signin')
@@ -92,7 +92,7 @@ describe('App e2e', () => {
           })
           .expectStatus(400);
       });
-      it('should throw if password empty', () => {
+      it('should throw error if password empty', () => {
         return pactum
           .spec()
           .post('/auth/signin')
@@ -101,7 +101,7 @@ describe('App e2e', () => {
           })
           .expectStatus(400);
       });
-      it('should throw if no body provided', () => {
+      it('should throw error if no body provided', () => {
         return pactum
           .spec()
           .post('/auth/signin')
@@ -151,12 +151,12 @@ describe('App e2e', () => {
     });
   });
 
-  describe('Bookmarks', () => {
-    describe('Get empty bookmarks', () => {
-      it('should get bookmarks', () => {
+  describe('Todo', () => {
+    describe('Get empty todos', () => {
+      it('should get todos', () => {
         return pactum
           .spec()
-          .get('/bookmarks')
+          .get('/todos')
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
@@ -166,14 +166,13 @@ describe('App e2e', () => {
     });
 
     describe('Create bookmark', () => {
-      const dto: CreateBookmarkDto = {
+      const dto: CreateTodoDto = {
         title: 'First Bookmark',
-        link: 'https://www.youtube.com',
       };
-      it('should create bookmark', () => {
+      it('should create todo', () => {
         return pactum
           .spec()
-          .post('/bookmarks')
+          .post('/todos')
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
@@ -183,11 +182,11 @@ describe('App e2e', () => {
       });
     });
 
-    describe('Get bookmarks', () => {
-      it('should get bookmarks', () => {
+    describe('Get todos', () => {
+      it('should get todos', () => {
         return pactum
           .spec()
-          .get('/bookmarks')
+          .get('/todos')
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
@@ -197,10 +196,10 @@ describe('App e2e', () => {
     });
 
     describe('Get bookmark by id', () => {
-      it('should get bookmark by id', () => {
+      it('should get todo by id', () => {
         return pactum
           .spec()
-          .get('/bookmarks/{id}')
+          .get('/todos/{id}')
           .withPathParams('id', '$S{bookmarkId}')
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
@@ -211,16 +210,16 @@ describe('App e2e', () => {
     });
 
     describe('Edit bookmark by id', () => {
-      const dto: EditBookmarkDto = {
+      const dto: EditTodoDto = {
         title:
           'Kubernetes Course - Full Beginners Tutorial (Containerize Your Apps!)',
         description:
           'Learn how to use Kubernetes in this complete course. Kubernetes makes it possible to containerize applications and simplifies app deployment to production.',
       };
-      it('should edit bookmark', () => {
+      it('should edit todo', () => {
         return pactum
           .spec()
-          .patch('/bookmarks/{id}')
+          .patch('/todos/{id}')
           .withPathParams('id', '$S{bookmarkId}')
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
@@ -231,12 +230,11 @@ describe('App e2e', () => {
           .expectBodyContains(dto.description);
       });
     });
-
-    describe('Delete bookmark by id', () => {
-      it('should delete bookmark', () => {
+    describe('Delete todo by id', () => {
+      it('should delete todo', () => {
         return pactum
           .spec()
-          .delete('/bookmarks/{id}')
+          .delete('/todos/{id}')
           .withPathParams('id', '$S{bookmarkId}')
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
@@ -244,10 +242,10 @@ describe('App e2e', () => {
           .expectStatus(204);
       });
 
-      it('should get empty bookmarks', () => {
+      it('should get empty todos', () => {
         return pactum
           .spec()
-          .get('/bookmarks')
+          .get('/todos')
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
